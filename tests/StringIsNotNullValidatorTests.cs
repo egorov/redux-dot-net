@@ -19,7 +19,7 @@ namespace tests
         }
 
         [Fact]
-        public void it_should_Validate_throw()
+        public void it_should_throws_on_Validate()
         {
             Assert.Throws<ArgumentNullException>(() => this.validator.Validate(null));
             Assert.Throws<ArgumentNullException>(() => this.validator.Validate(""));
