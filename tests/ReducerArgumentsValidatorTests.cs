@@ -24,6 +24,7 @@ namespace tests{
             Assert.Throws<ArgumentException>(() => this.validator.ValidateMessage(new Message(null, "value")));
             Assert.Throws<ArgumentException>(() => this.validator.ValidateMessage(new Message("", "value")));
             Assert.Throws<ArgumentException>(() => this.validator.ValidateMessage(new Message(" ", "value")));
+            Assert.Throws<ArgumentException>(() => this.validator.ValidateMessage(new Message(string.Empty, "value")));
         }
 
         [Fact]
