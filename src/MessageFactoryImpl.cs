@@ -4,9 +4,18 @@ namespace Redux
 {
     public class MessageFactoryImpl
     {
+        private PayloadValidators validators;
+            
+        public MessageFactoryImpl(PayloadValidators validators){
+            if(validators == null)
+                throw new ArgumentNullException("validators");
+            
+            this.validators = validators;
+        }
         public Message Make(string type, object payload)
         {
             this.ValidateType(type);
+            this.ValidatePayload(type, payload);
             return new Message(type, payload);
         }
 
@@ -17,6 +26,16 @@ namespace Redux
 
             if(string.IsNullOrWhiteSpace(type))
                 throw new ArgumentNullException("type");
+        }
+
+        private void ValidatePayload(string type, object payload){
+            
+            if(this.validators == null)
+                return;
+            
+            foreach(ValueValidator validator in this.validators.Get(type)){
+                validator.Validate(payload);
+            }
         }
     }
 }

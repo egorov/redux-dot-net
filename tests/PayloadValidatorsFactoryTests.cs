@@ -16,15 +16,15 @@ namespace tests{
 
             PayloadValidators payloadValidators = this.factory.Make();
 
+            Assert.Single(payloadValidators.Keys);
+            Assert.Contains("EXCEPTION", payloadValidators.Keys);
+
             IEnumerable<ValueValidator> validators = payloadValidators.Get("EXCEPTION");
             int count = validators.Count();
             Assert.Equal(1, count);
 
             ValueValidator validator = validators.First();
             Assert.True(validator is ExceptionValueValidator);
-
-            Assert.Single(payloadValidators.Keys);
-            Assert.Contains("EXCEPTION", payloadValidators.Keys);
         }
     }
 }
