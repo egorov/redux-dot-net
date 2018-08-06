@@ -16,7 +16,8 @@ Here is no actions in this implementations. Instead I make `Message`-s. You can 
 
 `MessageFactoryImpl` can validate `Message` payload content. Pass `PayloadValidators` to construct it:
     
-    MessageFactoryImpl factory = new MessageFactoryImpl(new PayloadValidatorsFactory().Make());
+    PayloadValidators validators = new PayloadValidatorsFactory().Make();
+    MessageFactoryImpl factory = new MessageFactoryImpl(validators);
 
     string type = "EXCEPTION";
 
