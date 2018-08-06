@@ -11,6 +11,12 @@ namespace Redux
             this.container = new Dictionary<string, HashSet<ValueValidator>>();
         }
 
+        public IEnumerable<string> Keys {
+            get{
+                return this.container.Keys;
+            }
+        }
+
         public void Add(string key, ValueValidator validator)
         {
             this.ValidateKey(key);
@@ -45,8 +51,10 @@ namespace Redux
 
         public IEnumerable<ValueValidator> Get(string key)
         {
-            this.CreateValidatorsCollectionIfNotExists(key);
-            return this.container[key];
+            if(this.container.ContainsKey(key))
+                return this.container[key];
+
+            return new HashSet<ValueValidator>();
         }
     }
 }

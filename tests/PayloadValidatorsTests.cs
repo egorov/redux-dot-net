@@ -23,6 +23,12 @@ namespace tests
             int count = this.validators.Get(key).Count();
             Assert.Equal(1, count);
             Assert.Contains(validator, this.validators.Get(key));
+
+            validator = new ExceptionValueValidator();
+            this.validators.Add(key, validator);
+            count = this.validators.Get(key).Count();
+            Assert.Equal(2, count);
+            Assert.Contains(validator, this.validators.Get(key));
         }
 
         [Fact]
@@ -41,6 +47,27 @@ namespace tests
         public void it_should_return_an_empty_collection(){
 
             Assert.Empty(this.validators.Get("FIRST_REQUEST"));
+        }
+
+        [Fact]
+        public void it_should_return_Keys(){
+
+            Assert.Empty(this.validators.Keys);
+
+            string key = "SAMPLE";
+            this.validators.Add(key, new StringIsNotNullValidator());
+            Assert.Single(this.validators.Keys);
+            Assert.Contains("SAMPLE", this.validators.Keys);
+
+            this.validators.Get("ANOTHER_KEY");
+            Assert.Single(this.validators.Keys);
+            Assert.Contains("SAMPLE", this.validators.Keys);
+
+            this.validators.Add("EXCEPTION", new ExceptionValueValidator());
+            int count = this.validators.Keys.Count();
+            Assert.Equal(2, count);
+            Assert.Contains("SAMPLE", this.validators.Keys);
+            Assert.Contains("EXCEPTION", this.validators.Keys);
         }
 
         [Fact]
