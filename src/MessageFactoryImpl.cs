@@ -5,8 +5,12 @@ namespace Redux
     public class MessageFactoryImpl
     {
         private PayloadValidators validators;
-            
+        
+        public MessageFactoryImpl()
+            :this(new PayloadValidators()) {}
+
         public MessageFactoryImpl(PayloadValidators validators){
+
             if(validators == null)
                 throw new ArgumentNullException("validators");
             

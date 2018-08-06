@@ -36,6 +36,18 @@ namespace tests
         }
 
         [Fact]
+        public void it_should_not_validate_content_by_default(){
+
+            this.factory = new MessageFactoryImpl();
+            string type = "EXCEPTION";
+            string payload = "This is just a string";
+
+            Message message = this.factory.Make(type, payload);
+            Assert.Equal(type, message.Type);
+            Assert.Equal(payload, message.Payload);
+        }
+
+        [Fact]
         public void it_should_throws_if_wrong_type(){
 
             Assert.Throws<ArgumentNullException>(() => this.factory.Make(null, "value"));
