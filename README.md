@@ -28,4 +28,16 @@ Here is no actions in this implementation. Instead I make `Message`-s. You can m
 
     Assert.Equal(type, message.Type);
     Assert.Equal(payload, message.Payload);
+
+## Reducer generates new state
+
+    IDictionary<string, object> before = new Dictionary<string, object>();
+    string key = "SAMPLE";
+    Reducer reducer = new ReducerImpl(key);
+    Message message = new Message(key, "Content");
+    IDictionary<string, object> after = reducer.Reduce(before, message);
+
+    Assert.True(after.ContainsKey(key));
+    Assert.Equal(message.Payload, after[key]);
+    Assert.NotSame(before, after);
     
