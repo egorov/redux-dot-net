@@ -13,7 +13,7 @@ namespace Redux{
             if(string.IsNullOrWhiteSpace(type))
                 throw new ArgumentNullException("type");
             
-            this.type = type.Substring(0, type.Length);
+            this.type = type;
         }
         public IDictionary<string, object> Reduce(IDictionary<string, object> state, Message message)
         {

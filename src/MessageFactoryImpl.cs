@@ -34,9 +34,6 @@ namespace Redux
 
         private void ValidatePayload(string type, object payload){
             
-            if(this.validators == null)
-                return;
-            
             foreach(ValueValidator validator in this.validators.Get(type)){
                 validator.Validate(payload);
             }
