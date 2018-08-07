@@ -5,17 +5,25 @@ using Redux;
 
 namespace tests{
     public class StoreImplTests{
+        private List<Message> messages;
         private MessageFactoryImpl factory;
         private IDictionary<string, object> state;
         private HashSet<Reducer> reducers;
         private StoreImpl store;
 
         public StoreImplTests(){
+            this.messages = new List<Message>();
             this.factory = new MessageFactoryImpl();
             this.state = new Dictionary<string, object>();
             this.reducers = new HashSet<Reducer>();
             this.reducers.Add(new ReducerImpl("SAMPLE"));
             this.store = new StoreImpl(this.state, this.reducers);
+        }
+
+        [Fact]
+        public void it_should_throw_on_construction(){
+            Assert.Throws<ArgumentNullException>(() => new StoreImpl(null, this.reducers));
+            Assert.Throws<ArgumentNullException>(() => new StoreImpl(this.state, null));
         }
 
         [Fact]
@@ -74,6 +82,22 @@ namespace tests{
             Assert.Throws<ArgumentException>(() => this.store.Dispatch(new Message(null, "content")));
             Assert.Throws<ArgumentException>(() => this.store.Dispatch(new Message("", "content")));
             Assert.Throws<ArgumentException>(() => this.store.Dispatch(new Message(" ", "content")));
+        }
+
+        [Fact]
+        public void it_should_Handle_message_with_subscriber_Action(){
+            
+            Action unsubscribe = this.store.Subscribe(this.Handle);
+            Message message = this.factory.Make("UNKNOWN", "Content");
+            this.store.Dispatch(message);
+
+            Assert.Single(this.messages);
+            Assert.Contains(message, this.messages);
+            unsubscribe();
+        }
+
+        private void Handle(Message message){
+            this.messages.Add(message);
         }
     }
 }
