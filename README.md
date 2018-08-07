@@ -2,7 +2,7 @@
 
 ## Action is Message
 
-Here is no actions in this implementations. Instead I make `Message`-s. You can make it too with:
+Here is no actions in this implementation. Instead I make `Message`-s. You can make it too with:
 
     MessageFactoryImpl factory = new MessageFactoryImpl();
 

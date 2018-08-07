@@ -17,13 +17,14 @@ namespace tests{
             this.state = new Dictionary<string, object>();
             this.reducers = new HashSet<Reducer>();
             this.reducers.Add(new ReducerImpl("SAMPLE"));
-            this.store = new StoreImpl(this.state, this.reducers);
+            this.store = new StoreImpl(this.reducers, this.state);
         }
 
         [Fact]
         public void it_should_throw_on_construction(){
-            Assert.Throws<ArgumentNullException>(() => new StoreImpl(null, this.reducers));
-            Assert.Throws<ArgumentNullException>(() => new StoreImpl(this.state, null));
+            Assert.Throws<ArgumentNullException>(() => new StoreImpl(null));
+            Assert.Throws<ArgumentNullException>(() => new StoreImpl(null, this.state));
+            Assert.Throws<ArgumentNullException>(() => new StoreImpl(this.reducers, null));
         }
 
         [Fact]
@@ -89,15 +90,30 @@ namespace tests{
             
             Action unsubscribe = this.store.Subscribe(this.Handle);
             Message message = this.factory.Make("UNKNOWN", "Content");
+            this.TestSubscribersHandle(message);
+        }
+
+        private void TestSubscribersHandle(Message message){
+
             this.store.Dispatch(message);
 
             Assert.Single(this.messages);
             Assert.Contains(message, this.messages);
-            unsubscribe();
         }
 
         private void Handle(Message message){
             this.messages.Add(message);
+        }
+
+        [Fact]
+        public void it_should_not_Handle_message_after_unsubscribe_call(){
+            
+            Action unsubscribe = this.store.Subscribe(this.Handle);
+            Message message = this.factory.Make("UNKNOWN", "Content");
+            this.TestSubscribersHandle(message);
+            
+            unsubscribe();
+            this.TestSubscribersHandle(message);
         }
     }
 }

@@ -7,13 +7,17 @@ namespace Redux{
         private IDictionary<string, object> state;
         private IEnumerable<Reducer> reducers;
         private HashSet<Action<Message>> subscribers;
-        public StoreImpl(IDictionary<string, object> state, IEnumerable<Reducer> reducers){
+
+        public StoreImpl(IEnumerable<Reducer> reducers)
+            :this(reducers, new Dictionary<string, object>()) { }
+        public StoreImpl(IEnumerable<Reducer> reducers, IDictionary<string, object> state){
+
+            if(reducers == null)
+                throw new ArgumentNullException("reducers");
 
             if(state == null)
                 throw new ArgumentNullException("state");
-            if(reducers == null)
-                throw new ArgumentNullException("reducers");
-            
+
             this.state = state;
             this.reducers = reducers;
             this.subscribers = new HashSet<Action<Message>>();
