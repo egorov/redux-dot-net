@@ -39,32 +39,32 @@ namespace tests{
         public void it_should_return_another_state_after_Dispatch(){
 
             Message message = this.factory.Make("SAMPLE", "Content");
-            this.store.Dispatch(message);            
+            this.TestDispatch(message);
             IDictionary<string, object> before = this.store.GetState();
 
             message = this.factory.Make("SAMPLE", "Another content");
-            this.store.Dispatch(message);
+            this.TestDispatch(message);
             IDictionary<string, object> after = this.store.GetState();            
 
             Assert.NotSame(before, after);
+        }
+
+        private void TestDispatch(Message message){
+            this.store.Dispatch(message);            
+
+            Assert.Single(this.store.GetState());
+            Assert.True(this.store.GetState().ContainsKey(message.Type));
+            Assert.Equal(message.Payload, this.store.GetState()[message.Type]);
         }
 
         [Fact]
         public void it_should_update_Store_state_after_Dispatch(){
 
             Message message = this.factory.Make("SAMPLE", "Content");
-            this.store.Dispatch(message);            
-
-            Assert.Single(this.store.GetState());
-            Assert.True(this.store.GetState().ContainsKey("SAMPLE"));
-            Assert.Equal("Content", this.store.GetState()["SAMPLE"]);
+            this.TestDispatch(message);
 
             message = this.factory.Make("SAMPLE", "Another content");
-            this.store.Dispatch(message);
-
-            Assert.Single(this.store.GetState());
-            Assert.True(this.store.GetState().ContainsKey("SAMPLE"));
-            Assert.Equal("Another content", this.store.GetState()["SAMPLE"]);
+            this.TestDispatch(message);
         }
 
         [Fact]
