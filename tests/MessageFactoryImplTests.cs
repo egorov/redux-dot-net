@@ -36,7 +36,7 @@ namespace tests
         }
 
         [Fact]
-        public void it_should_not_validate_content_by_default(){
+        public void it_should_not_validate_content_without_validators(){
 
             this.factory = new MessageFactoryImpl();
             string type = "EXCEPTION";
@@ -48,12 +48,17 @@ namespace tests
         }
 
         [Fact]
-        public void it_should_throws_if_wrong_type(){
+        public void empty_message_type_should_throw(){
 
             Assert.Throws<ArgumentNullException>(() => this.factory.Make(null, "value"));
             Assert.Throws<ArgumentNullException>(() => this.factory.Make("", "value"));
             Assert.Throws<ArgumentNullException>(() => this.factory.Make(" ", "value"));
             Assert.Throws<ArgumentNullException>(() => this.factory.Make(string.Empty, "value"));
+        }
+
+        [Fact]
+        public void wrong_payload_should_throw(){
+
             Assert.Throws<ArgumentException>(() => this.factory.Make("EXCEPTION", new StringIsNotNullValidator()));
         }
     }
