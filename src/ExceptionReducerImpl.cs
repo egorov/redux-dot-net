@@ -3,12 +3,13 @@ using System.Collections.Generic;
 
 namespace Redux
 {
-    public class ExceptionReducerImpl : XReducer
+    public class ExceptionReducerImpl : XReducerImpl 
     {
-        private readonly string type = "Exception";
-        public object Reduce(object state, Message message)
+        public ExceptionReducerImpl() : base("Exception", new MessageValidatorImpl()) { }        
+
+        public override object Reduce(object state, Message message)
         {
-            this.Validate(message);
+            this.messageValidator.Validate(message);
 
             if(message.Type != this.type)
                 return state;
@@ -20,12 +21,6 @@ namespace Redux
             errors.Add(error);
 
             return errors;                        
-        }
-
-        private void Validate(Message message)
-        {
-            if(message == null)
-                throw new ArgumentNullException("message");
         }
 
         private List<Exception> GetExceptions(object state)

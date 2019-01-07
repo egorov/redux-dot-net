@@ -22,6 +22,12 @@ namespace tests
         }
 
         [Fact]
+        public void it_should_return_Type()
+        {
+            Assert.Equal("Exception", this.reducer.Type);
+        }
+
+        [Fact]
         public void it_should_Reduce_if_state_is_Empty()
         {
             Exception error = new Exception();            
