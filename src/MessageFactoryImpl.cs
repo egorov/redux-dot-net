@@ -2,20 +2,22 @@ using System;
 
 namespace Redux
 {
-    public class MessageFactoryImpl
+    public class MessageFactoryImpl : MessageFactory
     {
         private PayloadValidators validators;
-        
+
         public MessageFactoryImpl()
-            :this(new PayloadValidators()) {}
+            : this(new PayloadValidators()) { }
 
-        public MessageFactoryImpl(PayloadValidators validators){
+        public MessageFactoryImpl(PayloadValidators validators)
+        {
 
-            if(validators == null)
+            if (validators == null)
                 throw new ArgumentNullException("validators");
-            
+
             this.validators = validators;
         }
+
         public Message Make(string type, object payload)
         {
             this.ValidateType(type);
@@ -23,18 +25,21 @@ namespace Redux
             return new Message(type, payload);
         }
 
-        private void ValidateType(string type){
-            
-            if(string.IsNullOrEmpty(type))
+        private void ValidateType(string type)
+        {
+
+            if (string.IsNullOrEmpty(type))
                 throw new ArgumentNullException("type");
 
-            if(string.IsNullOrWhiteSpace(type))
+            if (string.IsNullOrWhiteSpace(type))
                 throw new ArgumentNullException("type");
         }
 
-        private void ValidatePayload(string type, object payload){
-            
-            foreach(ValueValidator validator in this.validators.Get(type)){
+        private void ValidatePayload(string type, object payload)
+        {
+
+            foreach (ValueValidator validator in this.validators.Get(type))
+            {
                 validator.Validate(payload);
             }
         }
