@@ -1,43 +1,85 @@
-# .NET Redux implementation
+# Redux-мини для .NET
 
-## Action is Message
+Это простая реализация "контейнера состояния" по мотивам [Redux для JavaScript](https://redux.js.org/).
 
-Here is no actions in this implementation. Instead I make `Message`-s. You can make it too with:
+## Что это?
+Концептуально, собственно контейнер состояния представляет собой обычный `IDictonary<string, object>`, а управление этим контейнером осуществляется методами отдельного объекта `Store` (хранилище). Изящество решения в минимальном количестве этих методов. Собственно их буквально три:
 
-    MessageFactoryImpl factory = new MessageFactoryImpl();
+    public interface Store
+    {
+        void Dispatch(Message message);
+        IDictionary<string, object> GetState();
+        Action Subscribe(Action<Message> handler);
+    }
 
-    string type = "EXCEPTION";
-    string payload = "Something goes wrong!";
-    Message message = factory.Make(type, payload);
+Метод `Dispatch` позволяет отправлять сообщения `хранилищу` контейнера. Метод `GetState` позволяет получить копию текущего контейнера состояния со всем содержимым. И метод `Subscribe` позволяет подписаться на событие отправки сообщения. При этом следует иметь в виду что уведомления о таких событиях `хранилище` отправляет только при обработке тех типов сообщений, о которых оно осведомлено. 
 
-    Assert.Equal(type, message.Type);
-    Assert.Equal(payload, message.Payload);
+### Как настроить хранилище?
+О каких же типах событий осведомлено `хранилище`? О тех, для которых разработчик реализовал `редукторы` и при настройке `хранилища`, передал эти редукторы в конструктор `хранилища`.
 
+Минимальный процесс настройки `хранилища`, с использованием простейших штатных `редукторов` может выглядеть к примеру вот так:
 
-`MessageFactoryImpl` can validate `Message` payload content. Pass `PayloadValidators` to construct it:
-    
-    PayloadValidators validators = new PayloadValidatorsFactory().Make();
-    MessageFactoryImpl factory = new MessageFactoryImpl(validators);
+    List<Reducer> reducers = new List<Reducer>();
+    reducers.Add(new ReducerImpl("User"));
+    reducers.Add(new ReducerImpl("Group"));
+    reducers.Add(new ReducerImpl("EmailConfirmation"));
+    reducers.Add(new ExceptionReducerImpl());
 
-    string type = "EXCEPTION";
+    Store store = new StoreImpl(reducers);
 
-    Assert.Throws<ArgumentException>(() => this.factory.Make(type, "Something goes wrong!"));
+### Как отправить сообщение?
 
-    Exception payload = new Exception("Something goes wrong!");
-    Message message = factory.Make(type, payload);
+Теперь можно отправлять `хранилищу` сообщения:
 
-    Assert.Equal(type, message.Type);
-    Assert.Equal(payload, message.Payload);
+    User payload = new User() { 
+            Login = "jack", 
+            Password = "P@ssw0rd" 
+        };
 
-## Reducer generates new state
+    Message message = new Message("User", payload);
 
-    IDictionary<string, object> before = new Dictionary<string, object>();
-    string key = "SAMPLE";
-    Reducer reducer = new ReducerImpl(key);
-    Message message = new Message(key, "Content");
-    IDictionary<string, object> after = reducer.Reduce(before, message);
+    store.Dispatch(message);
 
-    Assert.True(after.ContainsKey(key));
-    Assert.Equal(message.Payload, after[key]);
-    Assert.NotSame(before, after);
-    
+### Что там в контейнере?
+
+И получать копию содержимого контейнера:
+
+    IDictionary<string, object> state = store.GetState();
+
+    User user = state["User"] as User;
+
+Реализация штатного редуктора `ReducerImpl` умеет просто обновлять содержимое ячейки контейнера с указанным при конструировании редуктора типом сообщения:
+
+    string type = "User";
+    Reducer reducer = new ReducerImpl(type);
+
+После этого, если вы отправите `хранилищу` сообщение с типом `"User"`, редуктор обновит значение, хранимое в ячейке контейнера с ключом `"User"`, что было продемонстрировано в предыдущих фрагментах кода выше.
+
+### Как узнать об изменениях содержимого контейнера?
+
+Как упоминалось ранее, `хранилище` умеет сообщать всем желающим об изменениях в контейнере. Чтобы начать получать уведомления об изменении необходимо подписаться на события отправки сообщений. В идеале, метод, подписывающийся на событие, должен иметь доступ к контейнеру состояний, посредством методов хранилища. Поэтому обработчик лучше описывать в отдельном классе, которому при конструировании передается экземпляр `хранилища`. Например так:
+
+    public class CustomHandler
+    {
+        private Store store;
+        
+        public CustomHandler(Store store)
+        {
+            this.store = store;
+        }
+
+        public void Handle(Message message)
+        {
+            IDictionary<string, object> state = this.store.GetState();
+
+            /// Здесь кодируем необходимое поведение
+        }
+    }
+
+Теперь можно подписать наш обработчик на события `хранилища` и код метода `Handle` будет вызываться всякий раз, когда кто-нибудь будет отправлять сообщение.
+
+    CustomHandler handler = new CustomHandler(store);
+
+    Action unsubscribe = store.Subscribe(handler.Handle);
+
+Вызов метода `Subscribe` возвращает ссылку на метод, который позволяет отписаться от получения уведомлений об поступлении сообщения в `хранилище`.

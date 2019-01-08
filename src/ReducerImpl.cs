@@ -10,6 +10,9 @@ namespace Redux
 
         protected readonly MessageValidator messageValidator;
 
+        public ReducerImpl(string type)
+            :this(type, new MessageValidatorImpl()) { }
+            
         public ReducerImpl(string type, MessageValidator messageValidator)
         {
             if(string.IsNullOrEmpty(type))
