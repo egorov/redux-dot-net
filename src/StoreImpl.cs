@@ -6,11 +6,16 @@ namespace Redux{
     {
         private IDictionary<string, object> state;
         private IEnumerable<Reducer> reducers;
+        private MessageValidator messageValidator;
         private HashSet<Action<Message>> subscribers;
 
         public StoreImpl(IEnumerable<Reducer> reducers)
-            :this(reducers, new Dictionary<string, object>()) { }
-        public StoreImpl(IEnumerable<Reducer> reducers, IDictionary<string, object> state){
+            :this(reducers, 
+                new Dictionary<string, object>(),
+                new MessageValidatorImpl()) { }
+        public StoreImpl(IEnumerable<Reducer> reducers, 
+            IDictionary<string, object> state,
+            MessageValidator messageValidator){
 
             if(reducers == null)
                 throw new ArgumentNullException("reducers");
@@ -18,14 +23,37 @@ namespace Redux{
             if(state == null)
                 throw new ArgumentNullException("state");
 
+            if(messageValidator == null)
+                throw new ArgumentNullException("messageValidator");
+
             this.state = state;
             this.reducers = reducers;
+            this.messageValidator = messageValidator;
             this.subscribers = new HashSet<Action<Message>>();
+            this.InitializeState();
+        }
+
+        private void InitializeState()
+        {
+            foreach(Reducer reducer in this.reducers)
+            {
+                if(this.state.ContainsKey(reducer.Type))
+                    continue;
+                
+                this.state.Add(reducer.Type, null);
+            }
         }
         public void Dispatch(Message message)
         {
-            foreach(Reducer reducer in this.reducers){
-                this.state = reducer.Reduce(this.state, message);
+            this.messageValidator.Validate(message);
+
+            if(!this.state.ContainsKey(message.Type))
+                return;
+            
+            foreach(Reducer reducer in this.reducers)
+            {
+                this.state[message.Type] = 
+                    reducer.Reduce(this.state[message.Type], message);
             }
 
             this.NotifySubscribers(message);

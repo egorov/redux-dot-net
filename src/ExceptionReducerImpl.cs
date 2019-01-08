@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Redux
 {
-    public class ExceptionReducerImpl : XReducerImpl 
+    public class ExceptionReducerImpl : ReducerImpl 
     {
         public ExceptionReducerImpl() : base("Exception", new MessageValidatorImpl()) { }        
 

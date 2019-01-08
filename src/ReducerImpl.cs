@@ -1,31 +1,38 @@
 using System;
-using System.Collections.Generic;
 
-namespace Redux{
-    public class ReducerImpl : ReducerArgumentsValidator, Reducer
+namespace Redux
+{
+    public class ReducerImpl : Reducer
     {
-        private string type;
-        public ReducerImpl(string type){
+        protected readonly string type;
 
+        public string Type { get { return this.type; } }
+
+        protected readonly MessageValidator messageValidator;
+
+        public ReducerImpl(string type, MessageValidator messageValidator)
+        {
             if(string.IsNullOrEmpty(type))
                 throw new ArgumentNullException("type");
-            
+
             if(string.IsNullOrWhiteSpace(type))
                 throw new ArgumentNullException("type");
             
+            if(messageValidator == null)
+                throw new ArgumentNullException("messageValidator");
+            
             this.type = type;
+            this.messageValidator = messageValidator;
         }
-        public IDictionary<string, object> Reduce(IDictionary<string, object> state, Message message)
-        {
-            this.ValidateState(state);
-            this.ValidateMessage(message);
 
-            if(message.Type != this.type)
+        public virtual object Reduce(object state, Message message)
+        {
+            this.messageValidator.Validate(message);
+
+            if(this.type != message.Type)
                 return state;
             
-            Dictionary<string, object> after = new Dictionary<string, object>(state);
-            after[message.Type] = message.Payload;
-            return after;
+            return message.Payload;            
         }
     }
 }

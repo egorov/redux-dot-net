@@ -18,7 +18,8 @@ namespace tests
         [Fact]
         public void it_should_implement_XReducer()
         {
-            Assert.IsAssignableFrom<XReducer>(this.reducer);
+            Assert.IsAssignableFrom<Reducer>(this.reducer);
+            Assert.IsAssignableFrom<ReducerImpl>(this.reducer);
         }
 
         [Fact]
