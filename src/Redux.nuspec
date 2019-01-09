@@ -1,18 +1,20 @@
 <?xml version="1.0"?>
-<package >
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
   <metadata>
-    <id>$id$</id>
-    <version>$version$</version>
-    <title>$title$</title>
-    <authors>$author$</authors>
-    <owners>$author$</owners>
-    <licenseUrl>http://LICENSE_URL_HERE_OR_DELETE_THIS_LINE</licenseUrl>
-    <projectUrl>http://PROJECT_URL_HERE_OR_DELETE_THIS_LINE</projectUrl>
-    <iconUrl>http://ICON_URL_HERE_OR_DELETE_THIS_LINE</iconUrl>
+    <id>Redux</id>
+    <version>1.0.0</version>
+    <title>Tiny application state container</title>
+    <authors>Sergey Egorov</authors>
+    <owners>SergeyEgorov</owners>
+    <projectUrl>https://github.com/egorov/redux-dot-net</projectUrl>
+    <license type="expression">Apache-2.0</license>
+    <language>en-US</language>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>$description$</description>
-    <releaseNotes>Summary of changes made in this release of the package.</releaseNotes>
-    <copyright>Copyright 2019</copyright>
-    <tags>Tag1 Tag2</tags>
+    <description>Predictable state container for .NET C#</description>
+    <releaseNotes>First version</releaseNotes>
+    <summary>Manage application state with just three methods. Subscribe to changes, Dispatch messages, and GetState.</summary>
+    <copyright>Copyright ©2019 Sergey Egorov</copyright>
+    <tags>state container redux</tags>
+    <dependencies></dependencies>
   </metadata>
 </package>

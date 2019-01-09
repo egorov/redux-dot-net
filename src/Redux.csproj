@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net461</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -18,7 +18,7 @@
     <Authors>Sergey Egorov</Authors>
     <NeutralLanguage>en-US</NeutralLanguage>
     <AssemblyTitle>Redux .NET</AssemblyTitle>
-    <Description>Simple .NET Redux implementation</Description>
+    <Description>Predictable state container for .NET C#</Description>
   </PropertyGroup>
 
 </Project>
