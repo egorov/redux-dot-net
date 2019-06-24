@@ -5,27 +5,14 @@ using System;
 
 namespace tests
 {
-  public class StoreConsumerSample : StoreConsumerBase
+  public class StoreConsumerImplTests
   {
-    public Store Store {
-      get {
-        return base.store;
-      }
-    }
-
-    public new void validateStore()
-    {
-      base.validateStore();
-    }
-  }
-  public class StoreConsumerBaseTests
-  {
-    private StoreConsumerSample consumer;
+    private StoreConsumerImpl consumer;
     private Store store;
 
-    public StoreConsumerBaseTests()
+    public StoreConsumerImplTests()
     {
-      this.consumer = new StoreConsumerSample();
+      this.consumer = new StoreConsumerImpl();
       this.store = this.makeStore();
     }
 

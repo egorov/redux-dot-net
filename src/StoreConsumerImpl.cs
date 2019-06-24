@@ -2,9 +2,14 @@ using System;
 
 namespace Redux
 {
-  public abstract class StoreConsumerBase : StoreConsumer
+  public class StoreConsumerImpl : StoreConsumer
   {
-    protected Store store;
+    private Store store;
+    public Store Store {
+      get {
+        return this.store;
+      }
+    }
     public void setStore(Store store)
     {
       if(store == null)
@@ -13,7 +18,7 @@ namespace Redux
       this.store = store;
     }
 
-    protected void validateStore()
+    public void validateStore()
     {
       if(this.store == null)
         throw new InvalidOperationException("Call setStore(Store store) first!");
