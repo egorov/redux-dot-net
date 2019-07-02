@@ -17,15 +17,31 @@ namespace Redux
 
       IDictionary<string, object> state = this.storeConsumer.Store.GetState();
 
-      if(!state.ContainsKey(this.key))
-        throw new InvalidOperationException($"There is no key {this.key} in Store!");
+      this.checkKeyExistsIn(state);
 
       object value = state[this.key];
 
+      if(value == null)
+        return default(T);
+
       if(!(value is T))
-        throw new InvalidOperationException($"There is not value of {typeof(T)} in state[{this.key}]!");
+      {
+        string message = 
+          $"Expected type of the value is {typeof(T)}, but actual type is {value.GetType()}, in cell with specified key!";
+        throw new InvalidOperationException(message);
+      }
 
       return (T)value;
+    }
+
+    private void checkKeyExistsIn(IDictionary<string, object> state)
+    {
+      if(!state.ContainsKey(this.key))
+      {
+        string message = $"The cell with the specified key {this.key} is missing in Store!";
+
+        throw new InvalidOperationException(message);
+      }
     }
 
     private string key;
