@@ -5,21 +5,23 @@ namespace Redux
 {
   public class StoreValueProviderImpl : StoreValueProvider
   {
+    private KeyConsumerImpl keyConsumer;
     private StoreConsumerImpl storeConsumer;
     public StoreValueProviderImpl()
     {
+      this.keyConsumer = new KeyConsumerImpl();
       this.storeConsumer = new StoreConsumerImpl();
     }
     public T get<T>()
     {
       this.storeConsumer.validateStore();
-      this.validateKey();
+      this.keyConsumer.validateKey();
 
       IDictionary<string, object> state = this.storeConsumer.Store.GetState();
 
       this.checkKeyExistsIn(state);
 
-      object value = state[this.key];
+      object value = state[this.keyConsumer.Key];
 
       if(value == null)
         return default(T);
@@ -36,31 +38,17 @@ namespace Redux
 
     private void checkKeyExistsIn(IDictionary<string, object> state)
     {
-      if(!state.ContainsKey(this.key))
+      if(!state.ContainsKey(this.keyConsumer.Key))
       {
-        string message = $"The cell with the specified key {this.key} is missing in Store!";
+        string message = $"The cell with the specified key {this.keyConsumer.Key} is missing in Store!";
 
         throw new InvalidOperationException(message);
       }
     }
 
-    private string key;
     public void setKey(string key)
     {
-      this.key = key;
-
-      this.validateKey();
-    }
-
-    private void validateKey()
-    {
-      string message = "key can\'t be null, empty or whitespaces!";
-
-      if(string.IsNullOrEmpty(this.key))
-        throw new ArgumentNullException(message);
-
-      if(string.IsNullOrWhiteSpace(this.key))
-        throw new ArgumentNullException(message);
+      this.keyConsumer.setKey(key);
     }
 
     public void setStore(Store store)
