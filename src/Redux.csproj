@@ -1,24 +1,20 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <AssemblyName>Redux</AssemblyName>
-    <PackageId>Redux</PackageId>
-  </PropertyGroup>
-
-  <PropertyGroup>
     <TargetFrameworks>netcoreapp2.2</TargetFrameworks>
-  </PropertyGroup>
-
-  <PropertyGroup>
-    <VersionPrefix>1.0.3</VersionPrefix>
+    <AssemblyName>Redux</AssemblyName>
+    <VersionPrefix>1.0.4</VersionPrefix>
     <VersionSuffix></VersionSuffix>
-  </PropertyGroup>
-
-  <PropertyGroup>
+    <PackageId>Redux</PackageId>
+    <Title>Tiny application state container</Title>
+    <Copyright>Copyright ©2019 Sergey Egorov</Copyright>
     <Authors>Sergey Egorov</Authors>
     <NeutralLanguage>en-US</NeutralLanguage>
     <AssemblyTitle>Redux .NET</AssemblyTitle>
     <Description>Predictable state container for .NET C#</Description>
+    <RepositoryUrl>https://github.com/egorov/redux-dot-net.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <NuspecFile>Redux.nuspec</NuspecFile>
   </PropertyGroup>
 
 </Project>

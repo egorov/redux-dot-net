@@ -24,7 +24,11 @@ namespace Redux
       object value = state[this.keyConsumer.Key];
 
       if(value == null)
-        return default(T);
+      {
+        string message = 
+          $"There is no value of {typeof(T)} type found in cell with {this.keyConsumer.Key} key!";
+        throw new InvalidOperationException(message);
+      }
 
       if(!(value is T))
       {

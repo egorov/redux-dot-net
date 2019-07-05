@@ -30,14 +30,29 @@ namespace tests
     }
 
     [Fact]
-    public void should_return_default_T_value()
+    public void should_throw_if_value_is_null()
     {
       this.provider.setStore(this.store);
       this.provider.setKey(this.key);
 
-      Assert.Null(this.provider.get<string>());
-      Assert.Equal(0, this.provider.get<int>());
-      Assert.False(this.provider.get<bool>());
+      Action getValue = () => this.provider.get<string>();
+      InvalidOperationException error = 
+        Assert.Throws<InvalidOperationException>(getValue);
+      string expected = 
+        $"There is no value of System.String type found in cell with {this.key} key!";
+      Assert.Equal(expected, error.Message);
+
+      getValue = () => this.provider.get<int>();
+      error = Assert.Throws<InvalidOperationException>(getValue);
+      expected = 
+        $"There is no value of System.Int32 type found in cell with {this.key} key!";
+      Assert.Equal(expected, error.Message);
+
+      getValue = () => this.provider.get<bool>();
+      error = Assert.Throws<InvalidOperationException>(getValue);
+      expected = 
+        $"There is no value of System.Boolean type found in cell with {this.key} key!";
+      Assert.Equal(expected, error.Message);
     }
 
     [Fact]
