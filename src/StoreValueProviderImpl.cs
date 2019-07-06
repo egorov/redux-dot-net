@@ -14,6 +14,32 @@ namespace Redux
     }
     public T get<T>()
     {
+      object value = this.getValue();
+
+      if(value == null)
+        this.throwValueIsNullError(typeof(T));
+
+      if(!(value is T))
+        this.throwWrongValueTypeError(value, typeof(T));
+
+      return (T)value;
+    }
+
+    public object get(Type type)
+    {
+      object value = this.getValue();
+
+      if(value == null)
+        this.throwValueIsNullError(type);
+
+      if(!(value.GetType().IsAssignableFrom(type)))
+        this.throwWrongValueTypeError(value, type);
+
+      return value;
+    }
+
+    private object getValue()
+    {
       this.storeConsumer.validateStore();
       this.keyConsumer.validateKey();
 
@@ -23,21 +49,7 @@ namespace Redux
 
       object value = state[this.keyConsumer.Key];
 
-      if(value == null)
-      {
-        string message = 
-          $"There is no value of {typeof(T)} type found in cell with {this.keyConsumer.Key} key!";
-        throw new InvalidOperationException(message);
-      }
-
-      if(!(value is T))
-      {
-        string message = 
-          $"Expected type of the value is {typeof(T)}, but actual type is {value.GetType()}, in cell with specified key!";
-        throw new InvalidOperationException(message);
-      }
-
-      return (T)value;
+      return value;
     }
 
     private void checkKeyExistsIn(IDictionary<string, object> state)
@@ -48,6 +60,20 @@ namespace Redux
 
         throw new InvalidOperationException(message);
       }
+    }
+
+    private void throwValueIsNullError(Type type)
+    {
+      string message = 
+          $"There is no value of {type} type found in cell with {this.keyConsumer.Key} key!";
+      throw new InvalidOperationException(message);
+    }
+
+    private void throwWrongValueTypeError(object value, Type type)
+    {
+      string message = 
+        $"Expected type of the value is {type}, but actual type is {value.GetType()}, in cell with specified key!";
+      throw new InvalidOperationException(message);
     }
 
     public void setKey(string key)
