@@ -1,9 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp2.2</TargetFrameworks>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup>
     <AssemblyName>Redux</AssemblyName>
-    <VersionPrefix>1.0.4</VersionPrefix>
+    <VersionPrefix>1.0.5</VersionPrefix>
     <VersionSuffix></VersionSuffix>
     <PackageId>Redux</PackageId>
     <Title>Tiny application state container</Title>
@@ -16,5 +19,6 @@
     <RepositoryType>git</RepositoryType>
     <NuspecFile>Redux.nuspec</NuspecFile>
   </PropertyGroup>
+
 
 </Project>

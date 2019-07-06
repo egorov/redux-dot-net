@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
   <metadata>
     <id>Redux</id>
-    <version>1.0.4</version>
+    <version>1.0.5</version>
     <title>Tiny application state container</title>
     <authors>Sergey Egorov</authors>
     <owners>SergeyEgorov</owners>
@@ -12,7 +12,7 @@
     <language>en-US</language>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Predictable state container for .NET C#</description>
-    <releaseNotes>StoreValueProviderImpl has been updated.</releaseNotes>
+    <releaseNotes>NuGet package has been fixed. StoreValueProviderImpl has been updated.</releaseNotes>
     <summary>Manage application state with just three methods. Subscribe to changes, Dispatch messages, and GetState.</summary>
     <copyright>Copyright ©2019 Sergey Egorov</copyright>
     <tags>state container redux</tags>
