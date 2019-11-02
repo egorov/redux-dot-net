@@ -1,85 +1,97 @@
-# Redux-мини для .NET
+# Redux mini for .NET
 
-Это простая реализация "контейнера состояния" по мотивам [Redux для JavaScript](https://redux.js.org/).
+It's simple "application state" container implementation like [Redux for JavaScript](https://redux.js.org/).
 
-## Что это?
-Концептуально, собственно контейнер состояния представляет собой обычный `IDictonary<string, object>`, а управление этим контейнером осуществляется методами отдельного объекта `Store` (хранилище). Изящество решения в минимальном количестве этих методов. Собственно их буквально три:
+## How does it work?
 
-    public interface Store
-    {
-        void Dispatch(Message message);
-        IDictionary<string, object> GetState();
-        Action Subscribe(Action<Message> handler);
-    }
+Application state container is just plain `IDictionary<string, object>` instance.
 
-Метод `Dispatch` позволяет отправлять сообщения `хранилищу` контейнера. Метод `GetState` позволяет получить копию текущего контейнера состояния со всем содержимым. И метод `Subscribe` позволяет подписаться на событие отправки сообщения. При этом следует иметь в виду что уведомления о таких событиях `хранилище` отправляет только при обработке тех типов сообщений, о которых оно осведомлено. 
+You can manage application state with just three methods of Store instance:
 
-### Как настроить хранилище?
-О каких же типах событий осведомлено `хранилище`? О тех, для которых разработчик реализовал `редукторы` и при настройке `хранилища`, передал эти редукторы в конструктор `хранилища`.
+```csharp
+public interface Store
+{
+  void Dispatch(Message message);
 
-Минимальный процесс настройки `хранилища`, с использованием простейших штатных `редукторов` может выглядеть к примеру вот так:
+  IDictionary<string, object> GetState();
 
-    List<Reducer> reducers = new List<Reducer>();
-    reducers.Add(new ReducerImpl("User"));
-    reducers.Add(new ReducerImpl("Group"));
-    reducers.Add(new ReducerImpl("EmailConfirmation"));
-    reducers.Add(new ExceptionReducerImpl());
+  Action Subscribe(Action<Message> handler);
+}
+```
 
-    Store store = new StoreImpl(reducers);
+"Send" `Message` to `Store` with `Dispatch` method:
 
-### Как отправить сообщение?
+```csharp
 
-Теперь можно отправлять `хранилищу` сообщения:
+string type = "User";
 
-    User payload = new User() { 
-            Login = "jack", 
-            Password = "P@ssw0rd" 
-        };
+User user = new User()
+{ 
+  Email = "joedoe@mail.local" 
+};
 
-    Message message = new Message("User", payload);
+Message message = new Message(type, user);
 
-    store.Dispatch(message);
+store.Dispatch(message);
+```
 
-### Что там в контейнере?
+Get application container state from `Store` with `GetState` method:
 
-И получать копию содержимого контейнера:
+```csharp
 
-    IDictionary<string, object> state = store.GetState();
+IDictionary<string, object> state = store.GetState();
 
-    User user = state["User"] as User;
+User user = state["User"] as User;
 
-Реализация штатного редуктора `ReducerImpl` умеет просто обновлять содержимое ячейки контейнера с указанным при конструировании редуктора типом сообщения:
+```
 
-    string type = "User";
-    Reducer reducer = new ReducerImpl(type);
+Know about application state change with `Subscribe` method:
 
-После этого, если вы отправите `хранилищу` сообщение с типом `"User"`, редуктор обновит значение, хранимое в ячейке контейнера с ключом `"User"`, что было продемонстрировано в предыдущих фрагментах кода выше.
+```csharp
+public class CustomHandler
+{
+  private Store store;
+    
+  public CustomHandler(Store store)
+  {
+    this.store = store;
+  }
 
-### Как узнать об изменениях содержимого контейнера?
+  public void Handle(Message message)
+  {
+    IDictionary<string, object> state = this.store.GetState();
 
-Как упоминалось ранее, `хранилище` умеет сообщать всем желающим об изменениях в контейнере. Чтобы начать получать уведомления об изменении необходимо подписаться на события отправки сообщений. В идеале, метод, подписывающийся на событие, должен иметь доступ к контейнеру состояний, посредством методов хранилища. Поэтому обработчик лучше описывать в отдельном классе, которому при конструировании передается экземпляр `хранилища`. Например так:
+    /// React state change here
+  }
+}
 
-    public class CustomHandler
-    {
-        private Store store;
-        
-        public CustomHandler(Store store)
-        {
-            this.store = store;
-        }
+CustomHandler handler = new CustomHandler(store);
 
-        public void Handle(Message message)
-        {
-            IDictionary<string, object> state = this.store.GetState();
+Action unsubscribe = store.Subscribe(handler.Handle);
+```
 
-            /// Здесь кодируем необходимое поведение
-        }
-    }
+### How to configure own application container?
 
-Теперь можно подписать наш обработчик на события `хранилища` и код метода `Handle` будет вызываться всякий раз, когда кто-нибудь будет отправлять сообщение.
+Make a collection of `Reducer`-s with built-in tools:
 
-    CustomHandler handler = new CustomHandler(store);
+```csharp
+  
+List<Reducer> reducers = new List<Reducer>();
 
-    Action unsubscribe = store.Subscribe(handler.Handle);
+reducers.Add(new ReducerImpl("Order"));
+reducers.Add(new ReducerImpl("Payment"));
+reducers.Add(new ReducerImpl("Withdrawal"));
+reducers.Add(new ExceptionReducerImpl());
 
-Вызов метода `Subscribe` возвращает ссылку на метод, который позволяет отписаться от получения уведомлений об поступлении сообщения в `хранилище`.
+/// And pass it to constructor of 
+/// built-in Store implementation
+Store store = new StoreImpl(reducers);
+```
+And you are ready to play with your application container. As you can see it knows about four `Message` types:
+
+ - "Order"
+ - "Payment"
+ - "Withdrawal"
+ - "Exception"
+
+It will ignore any other unknown type `Message`-s.
