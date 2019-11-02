@@ -95,3 +95,22 @@ And you are ready to play with your application container. As you can see it kno
  - "Exception"
 
 It will ignore any other unknown type `Message`-s.
+
+### Tool to get value from state container
+
+There is built-in `StoreValueProvider` utility:
+
+```csharp
+Order order = new Order();
+Message message = new Message("Order", order);
+store.Dispatch(message);
+
+StoreValueProvider provider = new StoreValueProviderImpl();
+
+provider.setStore(store);
+provider.setKey("Order");
+
+Assert.Equal(order, provider.get<Order>());
+Assert.Equal(order, provider.get(typeof(Order)));
+
+```
