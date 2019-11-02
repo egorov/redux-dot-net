@@ -14,15 +14,7 @@ namespace Redux
     }
     public T get<T>()
     {
-      object value = this.getValue();
-
-      if(value == null)
-        this.throwValueIsNullError(typeof(T));
-
-      if(!(value is T))
-        this.throwWrongValueTypeError(value, typeof(T));
-
-      return (T)value;
+      return (T)this.get(typeof(T));
     }
 
     public object get(Type type)

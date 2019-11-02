@@ -9,24 +9,24 @@ namespace tests
   {
     private string key;
     private Store store;
-    private StoreValueProviderImpl provider;
+    private StoreValueProvider provider;
 
     public StoreValueProviderImplTests()
     {
       this.key = "object";
-      HashSet<Reducer> reducers = new HashSet<Reducer>();
-      reducers.Add(new ReducerImpl(this.key));
-      this.store = new StoreImpl(reducers);
+
+      this.store = this.makeStore();
 
       this.provider = new StoreValueProviderImpl();
     }
 
-    [Fact]
-    public void should_implement()
+    private Store makeStore()
     {
-      Assert.IsAssignableFrom<StoreConsumer>(this.provider);
-      Assert.IsAssignableFrom<KeyConsumer>(this.provider);
-      Assert.IsAssignableFrom<StoreValueProvider>(this.provider);
+      HashSet<Reducer> reducers = new HashSet<Reducer>();
+
+      reducers.Add(new ReducerImpl(this.key));
+
+      return new StoreImpl(reducers);
     }
 
     [Fact]
@@ -44,68 +44,6 @@ namespace tests
     }
 
     [Fact]
-    public void typed_get_should_return_string_value()
-    {
-      string value = "This is string value";
-      Message message = new Message(this.key, value);
-      this.store.Dispatch(message);
-
-      this.provider.setStore(this.store);
-      this.provider.setKey(this.key);
-      object actual = this.provider.get(typeof(string));
-
-      Assert.Equal(value, actual);
-    }
-
-    [Fact]
-    public void generic_get_should_throw_if_value_type_differ()
-    {
-      string value = "This is string value";
-      Message message = new Message(this.key, value);
-      this.store.Dispatch(message);
-
-      this.provider.setStore(this.store);
-      this.provider.setKey(this.key);
-      Action notInteger = () => this.provider.get<int>();
-
-      Assert.Throws<InvalidOperationException>(notInteger);
-    }
-
-    [Fact]
-    public void typed_get_should_throw_if_value_type_differ()
-    {
-      string value = "This is string value";
-      Message message = new Message(this.key, value);
-      this.store.Dispatch(message);
-
-      this.provider.setStore(this.store);
-      this.provider.setKey(this.key);
-      Action notInteger = () => this.provider.get(typeof(int));
-
-      Assert.Throws<InvalidOperationException>(notInteger);
-    }
-
-    [Fact]
-    public void generic_get_should_throw_if_key_is_missing_in_Store()
-    {
-      this.provider.setStore(this.store);
-      this.provider.setKey("user");
-      Action noKey = () => this.provider.get<int>();
-
-      Assert.Throws<InvalidOperationException>(noKey);
-    }
-
-    [Fact]
-    public void typed_get_should_throw_if_key_is_missing_in_Store()
-    {
-      this.provider.setStore(this.store);
-      this.provider.setKey("user");
-      Action noKey = () => this.provider.get(typeof(int));
-
-      Assert.Throws<InvalidOperationException>(noKey);
-    }
-
-    [Fact]
     public void generic_get_should_return_integer_value()
     {
       int value = 2938;
@@ -115,20 +53,6 @@ namespace tests
       this.provider.setStore(this.store);
       this.provider.setKey(this.key);
       int actual = this.provider.get<int>();
-
-      Assert.Equal(value, actual);
-    }
-
-    [Fact]
-    public void typed_get_should_return_integer_value()
-    {
-      int value = 2938;
-      Message message = new Message(this.key, value);
-      this.store.Dispatch(message);
-
-      this.provider.setStore(this.store);
-      this.provider.setKey(this.key);
-      object actual = this.provider.get(typeof(int));
 
       Assert.Equal(value, actual);
     }
@@ -148,20 +72,6 @@ namespace tests
     }
 
     [Fact]
-    public void typed_get_should_return_boolean_value()
-    {
-      bool value = true;
-      Message message = new Message(this.key, value);
-      this.store.Dispatch(message);
-
-      this.provider.setStore(this.store);
-      this.provider.setKey(this.key);
-      object actual = this.provider.get(typeof(bool));
-
-      Assert.Equal(value, actual);
-    }
-
-    [Fact]
     public void generic_get_should_return_DateTime_value()
     {
       DateTime value = DateTime.UtcNow;
@@ -171,6 +81,38 @@ namespace tests
       this.provider.setStore(this.store);
       this.provider.setKey(this.key);
       DateTime actual = this.provider.get<DateTime>();
+
+      Assert.Equal(value, actual);
+    }
+
+    [Fact]
+    public void generic_get_should_return_object_instance_value()
+    {
+      ExceptionValueValidator value = new ExceptionValueValidator();
+      Message message = new Message(this.key, value);
+      this.store.Dispatch(message);
+
+      this.provider.setStore(this.store);
+      this.provider.setKey(this.key);
+      ExceptionValueValidator actual = 
+        this.provider.get<ExceptionValueValidator>();
+
+      Assert.Equal(value, actual);
+    }
+
+    [Theory]
+    [InlineData("This is string value")]
+    [InlineData(2098347)]
+    [InlineData(38.95d)]
+    [InlineData(false)]
+    public void typed_get_should_return(object value)
+    {
+      Message message = new Message(this.key, value);
+      this.store.Dispatch(message);
+
+      this.provider.setStore(this.store);
+      this.provider.setKey(this.key);
+      object actual = this.provider.get(value.GetType());
 
       Assert.Equal(value, actual);
     }
@@ -187,6 +129,88 @@ namespace tests
       object actual = this.provider.get(typeof(DateTime));
 
       Assert.Equal(value, actual);
+    }
+
+    [Fact]
+    public void typed_get_should_return_object_instance_value()
+    {
+      ExceptionValueValidator value = new ExceptionValueValidator();
+      Message message = new Message(this.key, value);
+      this.store.Dispatch(message);
+
+      this.provider.setStore(this.store);
+      this.provider.setKey(this.key);
+      object actual = this.provider.get(typeof(ExceptionValueValidator));
+
+      Assert.Equal(value, actual);
+    }
+
+    [Fact]
+    public void generic_get_should_throw_if_value_type_differ()
+    {
+      string value = "This is string value";
+      Message message = new Message(this.key, value);
+      this.store.Dispatch(message);
+
+      this.provider.setStore(this.store);
+      this.provider.setKey(this.key);
+      Action notInteger = () => this.provider.get<int>();
+
+      InvalidOperationException error = 
+        Assert.Throws<InvalidOperationException>(notInteger);
+      
+      string errorMessage = 
+        "Expected type of the value is System.Int32, but actual type is System.String, in cell with specified key!";
+      Assert.Equal(errorMessage, error.Message);
+    }
+
+    [Fact]
+    public void typed_get_should_throw_if_value_type_differ()
+    {
+      string value = "This is string value";
+      Message message = new Message(this.key, value);
+      this.store.Dispatch(message);
+
+      this.provider.setStore(this.store);
+      this.provider.setKey(this.key);
+      Action notInteger = () => this.provider.get(typeof(int));
+
+      InvalidOperationException error = 
+        Assert.Throws<InvalidOperationException>(notInteger);
+      
+      string errorMessage = 
+        "Expected type of the value is System.Int32, but actual type is System.String, in cell with specified key!";
+      Assert.Equal(errorMessage, error.Message);
+    }
+
+    [Fact]
+    public void generic_get_should_throw_if_key_is_missing_in_Store()
+    {
+      this.provider.setStore(this.store);
+      this.provider.setKey("user");
+      Action noKey = () => this.provider.get<int>();
+
+      InvalidOperationException error = 
+        Assert.Throws<InvalidOperationException>(noKey);
+      
+      string errorMessage = 
+        "The cell with the specified key user is missing in Store!";
+      Assert.Equal(errorMessage, error.Message);
+    }
+
+    [Fact]
+    public void typed_get_should_throw_if_key_is_missing_in_Store()
+    {
+      this.provider.setStore(this.store);
+      this.provider.setKey("user");
+      Action noKey = () => this.provider.get(typeof(int));
+
+      InvalidOperationException error = 
+        Assert.Throws<InvalidOperationException>(noKey);
+      
+      string errorMessage = 
+        "The cell with the specified key user is missing in Store!";
+      Assert.Equal(errorMessage, error.Message);
     }
 
     [Fact]
