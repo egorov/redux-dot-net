@@ -1,24 +1,26 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.2</TargetFramework>
-  </PropertyGroup>
-
-  <PropertyGroup>
+    <TargetFrameworks>netcoreapp2.2;netcoreapp3.0</TargetFrameworks>
     <AssemblyName>Redux</AssemblyName>
-    <VersionPrefix>1.0.6</VersionPrefix>
+    <IsPackable>true</IsPackable>
+    <VersionPrefix>1.0.7</VersionPrefix>
     <VersionSuffix></VersionSuffix>
     <PackageId>Redux</PackageId>
+    <PackageVersion>1.0.7</PackageVersion>
+    <PackageReleaseNotes>netcoreapp3.0 version binary has been added</PackageReleaseNotes>
     <Title>Tiny application state container</Title>
     <Copyright>Copyright ©2019 Sergey Egorov</Copyright>
     <Authors>Sergey Egorov</Authors>
     <NeutralLanguage>en-US</NeutralLanguage>
     <AssemblyTitle>Redux .NET</AssemblyTitle>
+    <PackageTags>state container;redux</PackageTags>
+    <PackageDescription>Predictable state container for .NET C#</PackageDescription>
     <Description>Predictable state container for .NET C#</Description>
     <RepositoryUrl>https://github.com/egorov/redux-dot-net.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <NuspecFile>Redux.nuspec</NuspecFile>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
   </PropertyGroup>
-
 
 </Project>
