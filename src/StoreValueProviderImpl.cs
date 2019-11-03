@@ -24,7 +24,7 @@ namespace Redux
       if(value == null)
         this.throwValueIsNullError(type);
 
-      if(!(value.GetType().IsAssignableFrom(type)))
+      if(!type.IsAssignableFrom(value.GetType()))
         this.throwWrongValueTypeError(value, type);
 
       return value;

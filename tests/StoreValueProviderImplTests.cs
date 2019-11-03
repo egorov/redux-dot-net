@@ -52,6 +52,20 @@ namespace tests
       Assert.Equal(value, actual);
     }
 
+    [Fact]
+    public void typed_get_should_return_interface()
+    {      
+      List<string> value = new List<string>();
+      Message message = new Message(this.key, value);
+      this.store.Dispatch(message);
+
+      this.provider.setStore(this.store);
+      this.provider.setKey(this.key);
+      object actual = this.provider.get(typeof(IEnumerable<string>));
+
+      Assert.Equal(value, actual);
+    }
+
     [Theory]
     [InlineData(typeof(string))]
     [InlineData(typeof(int))]
@@ -171,6 +185,21 @@ namespace tests
       this.provider.setKey(this.key);
       ExceptionValueValidator actual = 
         this.provider.get<ExceptionValueValidator>();
+
+      Assert.Equal(value, actual);
+    }
+
+    [Fact]
+    public void generic_get_should_return_interface()
+    {      
+      List<string> value = new List<string>();
+      Message message = new Message(this.key, value);
+      this.store.Dispatch(message);
+
+      this.provider.setStore(this.store);
+      this.provider.setKey(this.key);
+      IEnumerable<string> actual = 
+        this.provider.get<IEnumerable<string>>();
 
       Assert.Equal(value, actual);
     }

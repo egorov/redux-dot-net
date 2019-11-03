@@ -4,10 +4,10 @@
     <TargetFrameworks>netcoreapp2.2;netcoreapp3.0</TargetFrameworks>
     <AssemblyName>Redux</AssemblyName>
     <IsPackable>true</IsPackable>
-    <VersionPrefix>1.0.7</VersionPrefix>
+    <VersionPrefix>1.0.9</VersionPrefix>
     <VersionSuffix></VersionSuffix>
     <PackageId>Redux</PackageId>
-    <PackageVersion>1.0.7</PackageVersion>
+    <PackageVersion>1.0.9</PackageVersion>
     <PackageReleaseNotes>netcoreapp3.0 version binary has been added</PackageReleaseNotes>
     <Title>Tiny application state container</Title>
     <Copyright>Copyright ©2019 Sergey Egorov</Copyright>
