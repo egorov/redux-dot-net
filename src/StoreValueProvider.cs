@@ -6,5 +6,6 @@ namespace Redux
   {
     T get<T>();
     object get(Type type);
+    bool canGet(Type type);
   }
 }

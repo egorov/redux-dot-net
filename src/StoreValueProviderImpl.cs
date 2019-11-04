@@ -30,6 +30,24 @@ namespace Redux
       return value;
     }
 
+    public bool canGet(Type type)
+    {
+      IDictionary<string, object> state = this.storeConsumer.Store.GetState();
+
+      if(!state.ContainsKey(this.keyConsumer.Key))
+        return false;
+
+      object value = state[this.keyConsumer.Key];
+
+      if(value == null)
+        return false;
+
+      if(!type.IsAssignableFrom(value.GetType()))
+        return false;
+
+      return true;
+    }
+
     private object getValue()
     {
       this.storeConsumer.validateStore();

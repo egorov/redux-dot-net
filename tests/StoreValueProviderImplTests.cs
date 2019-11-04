@@ -28,40 +28,29 @@ namespace tests
       return new StoreImpl(reducers);
     }
 
-    public static IList<object[]> typedTestsData = new List<object[]>()
+    public static IList<object[]> typedCanGetTestsData = new List<object[]>()
     {
-      new object[] { "This is string" },
-      new object[] { 205482 },
-      new object[] { 38.95d },
-      new object[] { false },
-      new object[] { DateTime.UtcNow },
-      new object[] { new ExceptionValueValidator() }
+      new object[] { typeof(string), "This is string" },
+      new object[] { typeof(int), 205482 },
+      new object[] { typeof(double), 38.95d },
+      new object[] { typeof(float), 38.95f },
+      new object[] { typeof(decimal), 38.95m },
+      new object[] { typeof(bool), false },
+      new object[] { typeof(DateTime), DateTime.UtcNow },
+      new object[] { typeof(ExceptionValueValidator), new ExceptionValueValidator() },
+      new object[] { typeof(IEnumerable<int>), new List<int>() }
     };
 
     [Theory]
-    [MemberData(nameof(typedTestsData))]
-    public void typed_get_should_return(object value)
+    [MemberData(nameof(typedCanGetTestsData))]
+    public void typed_get_should_return(Type type, object value)
     {
       Message message = new Message(this.key, value);
       this.store.Dispatch(message);
 
       this.provider.setStore(this.store);
       this.provider.setKey(this.key);
-      object actual = this.provider.get(value.GetType());
-
-      Assert.Equal(value, actual);
-    }
-
-    [Fact]
-    public void typed_get_should_return_interface()
-    {      
-      List<string> value = new List<string>();
-      Message message = new Message(this.key, value);
-      this.store.Dispatch(message);
-
-      this.provider.setStore(this.store);
-      this.provider.setKey(this.key);
-      object actual = this.provider.get(typeof(IEnumerable<string>));
+      object actual = this.provider.get(type);
 
       Assert.Equal(value, actual);
     }
@@ -116,6 +105,19 @@ namespace tests
       string errorMessage = 
         "The cell with the specified key user is missing in Store!";
       Assert.Equal(errorMessage, error.Message);
+    }
+
+    [Theory]
+    [MemberData(nameof(typedCanGetTestsData))]
+    public void typed_canGet_should_return_true(Type type, object value)
+    {
+      Message message = new Message(this.key, value);
+      this.store.Dispatch(message);
+
+      this.provider.setStore(this.store);
+      this.provider.setKey(this.key);
+
+      Assert.True(this.provider.canGet(type));
     }
 
     [Fact]
