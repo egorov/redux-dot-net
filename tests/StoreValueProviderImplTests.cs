@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Redux;
 using System.Linq.Expressions;
+using System.Reflection;
 
 namespace tests
 {
@@ -138,90 +139,45 @@ namespace tests
       Assert.False(this.provider.canGet(type));
     }
 
-    [Fact]
-    public void generic_get_should_return_string_value()
+    public static IList<object[]> genericGetTestsData = new List<object[]>()
     {
-      string value = "This is string value";
+      new object[] { "This is string", typeof(string) },
+      new object[] { 39827, typeof(int) },
+      new object[] { 837.228d, typeof(double) },
+      new object[] { 2819.372f, typeof(float) },
+      new object[] { 1028.32m, typeof(decimal) },
+      new object[] { DateTime.UtcNow, typeof(DateTime) },
+      new object[] { new ExceptionValueValidator(), typeof(ValueValidator) },
+      new object[] { new ExceptionValueValidator(), typeof(ExceptionValueValidator) },
+      new object[] { new List<int>(), typeof(IEnumerable<int>) },
+      new object[] { new List<int>(), typeof(List<int>) }
+    };
+
+    [Theory]
+    [MemberData(nameof(genericGetTestsData))]
+    public void generic_get_should_return(object value, Type type)
+    {
       Message message = new Message(this.key, value);
       this.store.Dispatch(message);
-
-      this.provider.setStore(this.store);
+      
       this.provider.setKey(this.key);
-      string actual = this.provider.get<string>();
+      this.provider.setStore(this.store);
 
-      Assert.Equal(value, actual);
+      MethodInfo methodInfo = this.getStoreValueProviderGenericGet(type);
+
+      object result = methodInfo.Invoke(this.provider, null);
+
+      Assert.Equal(value, result);
     }
 
-    [Fact]
-    public void generic_get_should_return_integer_value()
+    private MethodInfo getStoreValueProviderGenericGet(Type type)
     {
-      int value = 2938;
-      Message message = new Message(this.key, value);
-      this.store.Dispatch(message);
+      MethodInfo method = 
+        this.provider.GetType().GetMethod("get", new Type[] {});
 
-      this.provider.setStore(this.store);
-      this.provider.setKey(this.key);
-      int actual = this.provider.get<int>();
+      MethodInfo genericMethod = method.MakeGenericMethod(new Type[] { type });
 
-      Assert.Equal(value, actual);
-    }
-
-    [Fact]
-    public void generic_get_should_return_boolean_value()
-    {
-      bool value = true;
-      Message message = new Message(this.key, value);
-      this.store.Dispatch(message);
-
-      this.provider.setStore(this.store);
-      this.provider.setKey(this.key);
-      bool actual = this.provider.get<bool>();
-
-      Assert.Equal(value, actual);
-    }
-
-    [Fact]
-    public void generic_get_should_return_DateTime_value()
-    {
-      DateTime value = DateTime.UtcNow;
-      Message message = new Message(this.key, value);
-      this.store.Dispatch(message);
-
-      this.provider.setStore(this.store);
-      this.provider.setKey(this.key);
-      DateTime actual = this.provider.get<DateTime>();
-
-      Assert.Equal(value, actual);
-    }
-
-    [Fact]
-    public void generic_get_should_return_object_instance_value()
-    {
-      ExceptionValueValidator value = new ExceptionValueValidator();
-      Message message = new Message(this.key, value);
-      this.store.Dispatch(message);
-
-      this.provider.setStore(this.store);
-      this.provider.setKey(this.key);
-      ExceptionValueValidator actual = 
-        this.provider.get<ExceptionValueValidator>();
-
-      Assert.Equal(value, actual);
-    }
-
-    [Fact]
-    public void generic_get_should_return_interface()
-    {      
-      List<string> value = new List<string>();
-      Message message = new Message(this.key, value);
-      this.store.Dispatch(message);
-
-      this.provider.setStore(this.store);
-      this.provider.setKey(this.key);
-      IEnumerable<string> actual = 
-        this.provider.get<IEnumerable<string>>();
-
-      Assert.Equal(value, actual);
+      return genericMethod;
     }
 
     public static IList<object[]> genericCanGetTestsData = new List<object[]>()
