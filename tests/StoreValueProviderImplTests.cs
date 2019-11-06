@@ -2,6 +2,7 @@ using Xunit;
 using System;
 using System.Collections.Generic;
 using Redux;
+using System.Linq.Expressions;
 
 namespace tests
 {
@@ -223,31 +224,35 @@ namespace tests
       Assert.Equal(value, actual);
     }
 
-    [Fact]
-    public void generic_canGet_string_should_return_true()
+    public static IList<object[]> genericCanGetTestsData = new List<object[]>()
     {
-      string value = "this is string";
+      new object[] { "This is string", (Expression<Func<StoreValueProvider, bool>>)(p => p.canGet<string>()) },
+      new object[] { 39827, (Expression<Func<StoreValueProvider, bool>>)(p => p.canGet<int>()) },
+      new object[] { 837.228d, (Expression<Func<StoreValueProvider, bool>>)(p => p.canGet<double>()) },
+      new object[] { 2819.372f, (Expression<Func<StoreValueProvider, bool>>)(p => p.canGet<float>()) },
+      new object[] { 1028.32m, (Expression<Func<StoreValueProvider, bool>>)(p => p.canGet<decimal>()) },
+      new object[] { DateTime.UtcNow, (Expression<Func<StoreValueProvider, bool>>)(p => p.canGet<DateTime>()) },
+      new object[] { new ExceptionValueValidator(), (Expression<Func<StoreValueProvider, bool>>)(p => p.canGet<ValueValidator>()) },
+      new object[] { new ExceptionValueValidator(), (Expression<Func<StoreValueProvider, bool>>)(p => p.canGet<ExceptionValueValidator>()) },
+      new object[] { new List<int>(), (Expression<Func<StoreValueProvider, bool>>)(p => p.canGet<IEnumerable<int>>()) },
+      new object[] { new List<int>(), (Expression<Func<StoreValueProvider, bool>>)(p => p.canGet<List<int>>()) }
+    };
+
+    [Theory]
+    [MemberData(nameof(genericCanGetTestsData))]
+    public void generic_canGet_should_return_true(
+      object value, 
+      Expression<Func<StoreValueProvider, bool>> expression
+    )
+    {
       Message message = new Message(this.key, value);
       this.store.Dispatch(message);
-
-      this.provider.setStore(this.store);
+      
       this.provider.setKey(this.key);
-
-      Assert.True(this.provider.canGet<string>());
-    }    
-
-    [Fact]
-    public void generic_canGet_int_should_return_true()
-    {
-      int value = 432;
-      Message message = new Message(this.key, value);
-      this.store.Dispatch(message);
-
       this.provider.setStore(this.store);
-      this.provider.setKey(this.key);
 
-      Assert.True(this.provider.canGet<int>());
-    }    
+      Assert.True(expression.Compile().Invoke(this.provider));
+    }
 
     [Fact]
     public void generic_get_should_throw_if_value_type_differ()
