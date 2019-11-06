@@ -30,6 +30,11 @@ namespace Redux
       return value;
     }
 
+    public bool canGet<T>()
+    {
+      return this.canGet(typeof(T));
+    }
+
     public bool canGet(Type type)
     {
       IDictionary<string, object> state = this.storeConsumer.Store.GetState();

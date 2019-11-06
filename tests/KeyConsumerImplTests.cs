@@ -36,14 +36,23 @@ namespace tests
     public void setKey_should_throw(string value)
     {
       Action wrongValue = () => this.consumer.setKey(value);
-      Assert.Throws<ArgumentNullException>(wrongValue);
+      
+      ArgumentException error = 
+        Assert.Throws<ArgumentException>(wrongValue);
+      
+      string message = "key can\'t be null, empty or whitespaces!";
+      Assert.Equal(message, error.Message);
     }
 
     [Fact]
     public void validateKey_should_throw()
     {
       Action keyWasNotSetYet = () => this.consumer.validateKey();
-      Assert.Throws<ArgumentNullException>(keyWasNotSetYet);
+      InvalidOperationException error = 
+        Assert.Throws<InvalidOperationException>(keyWasNotSetYet);
+      
+      string message = "Call setKey(string key) first!";
+      Assert.Equal(message, error.Message);
     }
   }
 }

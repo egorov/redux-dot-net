@@ -59,6 +59,8 @@ namespace tests
     [InlineData(typeof(string))]
     [InlineData(typeof(int))]
     [InlineData(typeof(bool))]
+    [InlineData(typeof(ExceptionValueValidator))]
+    [InlineData(typeof(DateTime))]
     public void typed_get_should_throw_if_in_Store_no_value_of(Type type)
     {
       this.provider.setStore(this.store);
@@ -118,6 +120,21 @@ namespace tests
       this.provider.setKey(this.key);
 
       Assert.True(this.provider.canGet(type));
+    }
+
+    [Theory]
+    [InlineData(typeof(string))]
+    [InlineData(typeof(int))]
+    [InlineData(typeof(decimal))]
+    [InlineData(typeof(float))]
+    [InlineData(typeof(DateTime))]
+    [InlineData(typeof(ExceptionValueValidator))]
+    public void typed_canGet_should_return_false(Type type)
+    {
+      this.provider.setStore(this.store);
+      this.provider.setKey(this.key);
+
+      Assert.False(this.provider.canGet(type));
     }
 
     [Fact]
@@ -207,6 +224,32 @@ namespace tests
     }
 
     [Fact]
+    public void generic_canGet_string_should_return_true()
+    {
+      string value = "this is string";
+      Message message = new Message(this.key, value);
+      this.store.Dispatch(message);
+
+      this.provider.setStore(this.store);
+      this.provider.setKey(this.key);
+
+      Assert.True(this.provider.canGet<string>());
+    }    
+
+    [Fact]
+    public void generic_canGet_int_should_return_true()
+    {
+      int value = 432;
+      Message message = new Message(this.key, value);
+      this.store.Dispatch(message);
+
+      this.provider.setStore(this.store);
+      this.provider.setKey(this.key);
+
+      Assert.True(this.provider.canGet<int>());
+    }    
+
+    [Fact]
     public void generic_get_should_throw_if_value_type_differ()
     {
       string value = "This is string value";
@@ -264,6 +307,48 @@ namespace tests
       expected = 
         $"There is no value of System.Boolean type found in cell with {this.key} key!";
       Assert.Equal(expected, error.Message);
+    }
+
+    [Fact]
+    public void typed_get_should_throw_if_store_was_not_set()
+    {
+      this.provider.setKey(this.key);
+      Action notConfigured = () => this.provider.get(typeof(int));
+
+      InvalidOperationException error = 
+        Assert.Throws<InvalidOperationException>(notConfigured);
+      
+      string errorMessage = 
+        "Call setStore(Store store) first!";
+      Assert.Equal(errorMessage, error.Message);
+    }
+
+    [Fact]
+    public void typed_get_should_throw_if_key_was_not_set()
+    {
+      this.provider.setStore(this.store);
+      Action notConfigured = () => this.provider.get(typeof(int));
+
+      InvalidOperationException error = 
+        Assert.Throws<InvalidOperationException>(notConfigured);
+      
+      string errorMessage = 
+        "Call setKey(string key) first!";
+      Assert.Equal(errorMessage, error.Message);
+    }
+
+    [Fact]
+    public void generic_get_should_throw_if_store_was_not_set()
+    {
+      this.provider.setKey(this.key);
+      Action notConfigured = () => this.provider.get<int>();
+
+      InvalidOperationException error = 
+        Assert.Throws<InvalidOperationException>(notConfigured);
+      
+      string errorMessage = 
+        "Call setStore(Store store) first!";
+      Assert.Equal(errorMessage, error.Message);
     }
   }
 }
