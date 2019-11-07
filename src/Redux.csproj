@@ -4,11 +4,11 @@
     <TargetFrameworks>netcoreapp2.2;netcoreapp3.0;netstandard2.0;netstandard2.1</TargetFrameworks>
     <AssemblyName>Redux</AssemblyName>
     <IsPackable>true</IsPackable>
-    <VersionPrefix>1.0.10</VersionPrefix>
+    <VersionPrefix>1.0.11</VersionPrefix>
     <VersionSuffix></VersionSuffix>
     <PackageId>Redux</PackageId>
-    <PackageVersion>1.0.10</PackageVersion>
-    <PackageReleaseNotes>netstandard2.0 and netstandard2.1 versions binary have been added</PackageReleaseNotes>
+    <PackageVersion>1.0.11</PackageVersion>
+    <PackageReleaseNotes>Reducers types check has been added to StoreImpl constructor. canGet method has been defined in StoreValueProvider.</PackageReleaseNotes>
     <Title>Tiny application state container</Title>
     <Copyright>Copyright ©2019 Sergey Egorov</Copyright>
     <Authors>Sergey Egorov</Authors>

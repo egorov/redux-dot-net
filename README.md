@@ -110,7 +110,12 @@ StoreValueProvider provider = new StoreValueProviderImpl();
 provider.setStore(store);
 provider.setKey("Order");
 
+Assert.True(provider.canGet<Order>());
+Assert.True(provider.canGet(typeof(Order)));
+
 Assert.Equal(order, provider.get<Order>());
 Assert.Equal(order, provider.get(typeof(Order)));
 
+Assert.False(provider.canGet<User>());
+Assert.False(provider.canGet(typeof(User)));
 ```
